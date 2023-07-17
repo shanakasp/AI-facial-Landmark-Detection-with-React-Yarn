@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import "./App.css";
 import * as tf from "@tensorflow/tfjs";
 import * as facemesh from "@tensorflow-models/face-landmarks-detection";
@@ -8,6 +8,7 @@ import { drawMesh } from "./utilities";
 function App() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
+  const [facialExpression, setFacialExpression] = useState("shanaka");
 
   const runFacemesh = async () => {
     const net = await facemesh.load(facemesh.SupportedPackages.mediapipeFacemesh);
@@ -42,11 +43,12 @@ function App() {
           const sad = expressions.sad > 0.5;
           const neutral = expressions.neutral > 0.5;
 
-          // Log the determined facial expressions
-          if (smiling) console.log("Smiling");
-          if (angry) console.log("Angry");
-          if (sad) console.log("Sad");
-          if (neutral) console.log("Neutral");
+          // Update facial expression state
+          if (smiling) setFacialExpression("Smiling");
+          else if (angry) setFacialExpression("Angry");
+          else if (sad) setFacialExpression("Sad");
+          else if (neutral) setFacialExpression("Neutral");
+          else setFacialExpression("");
         }
       }
 
@@ -95,6 +97,8 @@ function App() {
             height: 480,
           }}
         />
+
+        <div className="expression">{facialExpression}</div>
       </header>
     </div>
   );
